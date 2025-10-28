@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="admin-shell">
+    <aside class="admin-sidebar">
+      <div class="admin-profile">
+        <div class="admin-avatar"></div>
+        <div class="admin-name">Admin</div>
+      </div>
+      <nav class="admin-nav">
+        <a class="admin-nav-item active" href="#">
+          <span class="icon">🏠</span>
+          <span>Dashboard</span>
+        </a>
+        <a class="admin-nav-item" href="#">
+          <span class="icon">📊</span>
+          <span>Report</span>
+        </a>
+        <a class="admin-nav-item" href="#">
+          <span class="icon">➕</span>
+          <span>Add New</span>
+        </a>
+      </nav>
+    </aside>
+
+    <main class="admin-main">
+      <div class="admin-topbar">
+        <div class="search-bar">
+          <input id="searchInput" type="text" placeholder="Search" />
+          <button aria-label="search">🔍</button>
+        </div>
+        <div class="date-time">
+          <div id="dateText">Date: --</div>
+          <div id="timeText">Time: --</div>
+        </div>
+      </div>
+
+      <div class="cards-row">
+        <div class="stat-card">
+          <div class="stat-icon">📈</div>
+          <div class="stat-title">Total</div>
+          <div id="totalUsers" class="stat-value">--</div>
+        </div>
+      </div>
+
+      <section class="section">
+        <h2>Attendance</h2>
+        <div class="table-wrap">
+          <table class="data-table" id="attendanceTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>User Name</th>
+                <th>Check In</th>
+                <th>Check Out</th>
+                <th>Working Hours</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Rows populated by JS when available -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>

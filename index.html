@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="login-wrapper">
+            <!-- Left side - Illustration -->
+            <div class="illustration-section">
+                <div class="illustration-container">
+                    <div class="circle-background"></div>
+                    <img src="assets/images/login_animation.svg" alt="Login Illustration" class="illustration-image">
+                </div>
+            </div>
+
+            <!-- Right side - Login Form -->
+            <div class="form-section">
+                <div class="login-form-container">
+                    <h1 class="login-title">Login</h1>
+                    
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label for="email" class="form-label">Email:</label>
+                            <input 
+                                type="email" 
+                                id="email" 
+                                class="form-input" 
+                                required
+                            >
+                            <span class="error-message" id="emailError"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password" class="form-label">Password:</label>
+                            <div class="password-wrapper">
+                                <input 
+                                    type="password" 
+                                    id="password" 
+                                    class="form-input" 
+                                    required
+                                >
+                                <button type="button" class="toggle-password" id="togglePassword">
+                                    <svg class="eye-icon" id="eyeIconOff" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                        <line x1="1" y1="1" x2="23" y2="23"></line>
+                                    </svg>
+                                    <svg class="eye-icon hidden" id="eyeIconOn" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                </button>
+                            </div>
+                            <span class="error-message" id="passwordError"></span>
+                        </div>
+
+                        <button type="submit" class="login-button" id="loginButton">
+                            <span id="buttonText">Login</span>
+                            <span class="spinner hidden" id="spinner"></span>
+                        </button>
+                    </form>
+
+                    <div class="alert hidden" id="alert"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

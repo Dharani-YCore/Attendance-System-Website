@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Login System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="home-page">
+        <!-- App Bar -->
+        <header class="app-bar">
+            <h1 class="app-bar-title">Home</h1>
+            <button class="logout-button" id="logoutButton">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+            </button>
+        </header>
+
+        <!-- Main Content -->
+        <main class="home-content">
+            <div class="user-profile">
+                <!-- User Avatar -->
+                <div class="user-avatar" id="userAvatar">U</div>
+
+                <!-- Welcome Message -->
+                <h2 class="welcome-message">Welcome!</h2>
+
+                <!-- User Name -->
+                <p class="user-name" id="userName">User</p>
+
+                <!-- User Email -->
+                <p class="user-email" id="userEmail"></p>
+
+                <!-- User Info Card -->
+                <div class="user-info-card">
+                    <div class="info-item">
+                        <svg class="info-icon" style="color: #4CAF50;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        <div class="info-content">
+                            <h3 class="info-title">Account Status</h3>
+                            <p class="info-subtitle">Verified</p>
+                        </div>
+
+    <!-- Add User Modal -->
+    <div class="modal hidden" id="addUserModal">
+        <div class="modal-content">
+            <h2 class="modal-title">Add New User</h2>
+            <form id="addUserForm">
+                <div class="form-group">
+                    <label class="form-label" for="addName">Name</label>
+                    <input class="form-input" id="addName" type="text" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="addEmail">Email</label>
+                    <input class="form-input" id="addEmail" type="email" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="addPassword">Password</label>
+                    <input class="form-input" id="addPassword" type="password" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="modal-button cancel-button" id="cancelAddUser">Cancel</button>
+                    <button type="submit" class="modal-button confirm-button" id="submitAddUser">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="info-item">
+                        <svg class="info-icon" style="color: #00ACC1;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        <div class="info-content">
+                            <h3 class="info-title">User ID</h3>
+                            <p class="info-subtitle" id="userId">N/A</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Section -->
+            <section class="users-section">
+                <div class="section-header">
+                    <h2 class="section-title">Users</h2>
+                    <button class="primary-button" id="openAddUserBtn">Add User</button>
+                </div>
+                <div class="users-controls">
+                    <input type="text" id="usersSearch" class="form-input" placeholder="Search by name or email">
+                </div>
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Created</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTbody">
+                            <tr><td colspan="4" style="text-align:center; padding:16px;">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="usersPagination">
+                    <button class="page-btn" id="prevPage">Prev</button>
+                    <span class="page-info" id="pageInfo">Page 1</span>
+                    <button class="page-btn" id="nextPage">Next</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Logout Confirmation Modal -->
+    <div class="modal hidden" id="logoutModal">
+        <div class="modal-content">
+            <h2 class="modal-title">Logout</h2>
+            <p class="modal-message">Are you sure you want to logout?</p>
+            <div class="modal-actions">
+                <button class="modal-button cancel-button" id="cancelLogout">Cancel</button>
+                <button class="modal-button confirm-button" id="confirmLogout">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="home.js"></script>
+</body>
+</html>
