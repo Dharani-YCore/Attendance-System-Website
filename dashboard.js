@@ -4,8 +4,7 @@
   const API = {
     base: 'http://localhost/Attendance-System-Website/api',
     get users(){ return `${this.base}/users.php`; },
-    get stats(){ return `${this.base}/stats.php`; },
-    get holidays(){ return `${this.base}/holidays.php`; }
+    get stats(){ return `${this.base}/stats.php`; }
   };
 
   function updateDateTime(){
@@ -37,12 +36,10 @@
         $('#totalUsers').textContent = '--';
       }
     }catch(e){
-      console.error('Failed to load total users', e);
       $('#totalUsers').textContent = '--';
     }
   }
 
-  // Users list
   async function fetchUsers(){
     const res = await fetch(`${API.users}?page=1&per_page=100`);
     if (!res.ok) throw new Error('Failed to load users');
@@ -62,9 +59,9 @@
         <td>${u.name ?? ''}</td>
         <td>${u.email ?? ''}</td>
         <td>
-          <button class="table-btn view-btn" data-id="${u.id}">View</button>
-          <button class="table-btn edit-btn" data-id="${u.id}">Edit</button>
-          <button class="table-btn delete-btn" data-id="${u.id}">Delete</button>
+          <button class="icon-btn view-btn" title="View" data-id="${u.id}">👁️</button>
+          <button class="icon-btn edit-btn" title="Edit" data-id="${u.id}">✏️</button>
+          <button class="icon-btn delete-btn" title="Delete" data-id="${u.id}">🗑️</button>
         </td>
       </tr>
     `).join('');
@@ -77,7 +74,6 @@
         renderUsers(data.data.items);
       }
     }catch(err){
-      console.error(err);
       const tbody = $('#usersTableBody');
       if (tbody) tbody.innerHTML = `<tr><td colspan="4" style="color:#c00; text-align:center; padding:12px;">${err.message}</td></tr>`;
     }
@@ -190,29 +186,7 @@
   }
 
   document.addEventListener('click', (e) => {
-    if (e.target.closest('#usersTableBody .table-btn')) handleTableClick(e);
-  });
-
-  editUserForm && editUserForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const id = editUserId?.value;
-    const name = (editName?.value || '').trim();
-    const email = (editEmail?.value || '').trim();
-    const password = editPassword?.value || '';
-    if (!id || !name || !email){ alert('Please fill required fields'); return; }
-    try{
-      const payload = { name, email };
-      if (password) payload.password = password;
-      const res = await fetch(`${API.users}?id=${encodeURIComponent(id)}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      const data = await res.json();
-      if (!data.success) throw new Error(data.message || 'Failed to update');
-      closeEditModal();
-      await loadUsers();
-    }catch(err){ alert(err.message); }
+    if (e.target.closest('#usersTableBody .icon-btn')) handleTableClick(e);
   });
 
   // Init
@@ -220,95 +194,6 @@
   setInterval(updateDateTime, 30_000);
   fetchTotalUsers();
   loadUsers();
-
-  // Holiday section
-  const navHoliday = $('#navHoliday');
-  const usersSection = $('#usersSection');
-  const holidaySection = $('#holidaySection');
-  const holidaysTableBody = $('#holidaysTableBody');
-  const addHolidayBtn = $('#addHolidayBtn');
-  const addHolidayModal = $('#addHolidayModal');
-  const addHolidayForm = $('#addHolidayForm');
-  const holidayDate = $('#holidayDate');
-  const holidayName = $('#holidayName');
-  const holidayType = $('#holidayType');
-  const cancelAddHoliday = $('#cancelAddHoliday');
-
-  function showUsers(){
-    usersSection && (usersSection.style.display = 'block');
-    holidaySection && (holidaySection.style.display = 'none');
-  }
-  function showHolidays(){
-    usersSection && (usersSection.style.display = 'none');
-    holidaySection && (holidaySection.style.display = 'block');
-  }
-
-  async function fetchHolidays(){
-    const res = await fetch(API.holidays);
-    if (!res.ok) throw new Error('Failed to load holidays');
-    return res.json();
-  }
-
-  function renderHolidays(items){
-    if (!holidaysTableBody) return;
-    if (!Array.isArray(items) || items.length === 0){
-      holidaysTableBody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:12px;">No upcoming holidays</td></tr>';
-      return;
-    }
-    holidaysTableBody.innerHTML = items.map(h => `
-      <tr>
-        <td>${h.holiday_date}</td>
-        <td>${h.holiday_name}</td>
-        <td>${h.holiday_type}</td>
-      </tr>
-    `).join('');
-  }
-
-  async function loadHolidays(){
-    try{
-      if (holidaysTableBody) holidaysTableBody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:12px;">Loading...</td></tr>';
-      const data = await fetchHolidays();
-      if (data && data.success){
-        renderHolidays(data.data?.items || []);
-      }
-    }catch(err){
-      if (holidaysTableBody) holidaysTableBody.innerHTML = `<tr><td colspan="3" style="color:#c00; text-align:center; padding:12px;">${err.message}</td></tr>`;
-    }
-  }
-
-  function openAddHoliday(){ addHolidayModal && addHolidayModal.classList.remove('hidden'); }
-  function closeAddHoliday(){ if(addHolidayModal){ addHolidayModal.classList.add('hidden'); addHolidayForm && addHolidayForm.reset(); } }
-
-  navHoliday && navHoliday.addEventListener('click', async (e) => {
-    e.preventDefault();
-    showHolidays();
-    await loadHolidays();
-  });
-  addHolidayBtn && addHolidayBtn.addEventListener('click', openAddHoliday);
-  cancelAddHoliday && cancelAddHoliday.addEventListener('click', closeAddHoliday);
-  addHolidayModal && addHolidayModal.addEventListener('click', (e)=>{ if(e.target === addHolidayModal) closeAddHoliday(); });
-
-  addHolidayForm && addHolidayForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const payload = {
-      holiday_date: holidayDate?.value || '',
-      holiday_name: (holidayName?.value || '').trim(),
-      holiday_type: holidayType?.value || 'National'
-    };
-    if (!payload.holiday_date || !payload.holiday_name){
-      alert('Please provide date and name');
-      return;
-    }
-    try{
-      const res = await fetch(API.holidays, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      const data = await res.json();
-      if (!data.success) throw new Error(data.message || 'Failed to add holiday');
-      closeAddHoliday();
-      await loadHolidays();
-    }catch(err){ alert(err.message); }
-  });
 })();
+
+

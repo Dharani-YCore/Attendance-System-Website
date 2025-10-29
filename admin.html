@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Dashboard</title>
+  <title>Dashboard - Admin</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -14,17 +14,17 @@
         <div class="admin-name">Admin</div>
       </div>
       <nav class="admin-nav">
-        <a class="admin-nav-item active" href="#">
+        <a class="admin-nav-item active" href="admin.html">
           <span class="icon">🏠</span>
           <span>Dashboard</span>
         </a>
-        <a class="admin-nav-item" href="#">
+        <a class="admin-nav-item" href="report.html">
           <span class="icon">📊</span>
           <span>Report</span>
         </a>
-        <a class="admin-nav-item" href="#">
-          <span class="icon">➕</span>
-          <span>Add New</span>
+        <a class="admin-nav-item" href="holiday.html" id="navHoliday">
+          <span class="icon">🎉</span>
+          <span>Holiday</span>
         </a>
       </nav>
     </aside>
@@ -49,28 +49,94 @@
         </div>
       </div>
 
-      <section class="section">
-        <h2>Attendance</h2>
+      <section class="section" id="usersSection">
+        <div class="section-header" style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+          <h2>Users</h2>
+          <button id="addUserBtn" class="primary-button">Add New</button>
+        </div>
         <div class="table-wrap">
-          <table class="data-table" id="attendanceTable">
+          <table class="data-table" id="usersTable">
             <thead>
               <tr>
                 <th>ID</th>
                 <th>User Name</th>
-                <th>Check In</th>
-                <th>Check Out</th>
-                <th>Working Hours</th>
+                <th>Email</th>
+                <th style="width:140px;">Actions</th>
               </tr>
             </thead>
-            <tbody>
-              <!-- Rows populated by JS when available -->
+            <tbody id="usersTableBody">
+              <tr><td colspan="4" style="text-align:center; padding:12px;">Loading...</td></tr>
             </tbody>
           </table>
         </div>
       </section>
+
+      <!-- Add User Modal -->
+      <div class="modal hidden" id="addUserModal">
+        <div class="modal-content">
+          <h2 class="modal-title">Add New User</h2>
+          <form id="addUserForm">
+            <div class="form-group">
+              <label class="form-label" for="addName">Name</label>
+              <input class="form-input" id="addName" type="text" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="addEmail">Email</label>
+              <input class="form-input" id="addEmail" type="email" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="addPassword">Password</label>
+              <input class="form-input" id="addPassword" type="password" required />
+            </div>
+            <div class="modal-actions">
+              <button type="button" class="modal-button cancel-button" id="cancelAddUser">Cancel</button>
+              <button type="submit" class="modal-button confirm-button">Save</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Edit User Modal -->
+      <div class="modal hidden" id="editUserModal">
+        <div class="modal-content">
+          <h2 class="modal-title">Edit User</h2>
+          <form id="editUserForm">
+            <input type="hidden" id="editUserId" />
+            <div class="form-group">
+              <label class="form-label" for="editName">Name</label>
+              <input class="form-input" id="editName" type="text" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="editEmail">Email</label>
+              <input class="form-input" id="editEmail" type="email" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="editPassword">Password (leave blank to keep)</label>
+              <input class="form-input" id="editPassword" type="password" />
+            </div>
+            <div class="modal-actions">
+              <button type="button" class="modal-button cancel-button" id="cancelEditUser">Cancel</button>
+              <button type="submit" class="modal-button confirm-button">Update</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- View User Modal -->
+      <div class="modal hidden" id="viewUserModal">
+        <div class="modal-content">
+          <h2 class="modal-title">User Details</h2>
+          <div class="form-group"><label class="form-label">ID</label><div id="viewId"></div></div>
+          <div class="form-group"><label class="form-label">Name</label><div id="viewName"></div></div>
+          <div class="form-group"><label class="form-label">Email</label><div id="viewEmail"></div></div>
+          <div class="modal-actions">
+            <button type="button" class="modal-button confirm-button" id="closeViewUser">Close</button>
+          </div>
+        </div>
+      </div>
     </main>
   </div>
 
-  <script src="admin.js"></script>
+  <script src="dashboard.js"></script>
 </body>
 </html>
