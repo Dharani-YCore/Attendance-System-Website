@@ -22,7 +22,7 @@
 }
 
 .admin-profile { padding: 8px; text-align: left; }
-.admin-avatar { width: 56px; height: 56px; border-radius: 50%; background:#e8e8e8; margin-bottom: 8px; }
+.admin-avatar { width: 56px; height: 56px; border-radius: 50%; background:#e8e8e8; margin-bottom: 8px; display:flex; align-items:center; justify-content:center; font-weight:700; color:#0f172a; overflow:hidden; text-transform: uppercase; }
 .admin-name { font-weight: 600; color: #0f172a; }
 
 .admin-nav { display: flex; flex-direction: column; gap: 8px; }
