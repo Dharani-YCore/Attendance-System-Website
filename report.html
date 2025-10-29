@@ -46,12 +46,37 @@
       </div>
 
       <section class="section">
-        <h2>Reports</h2>
-        <p style="opacity:.7">Reports page placeholder. Provide requirements to implement.</p>
+        <div class="section-header" style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+          <h2>Reports</h2>
+        </div>
+
+        <div class="table-wrap" style="padding:16px; margin-bottom:16px; overflow: auto;">
+          <canvas id="loginChart" height="70"></canvas>
+        </div>
+
+        <div class="table-wrap" id="attendanceWrap" style="margin-bottom:16px; max-height:60vh; overflow:auto;">
+          <table class="data-table" id="attendanceTable">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>ID</th>
+                <th>User Name</th>
+                <th>Email</th>
+                <th>Check In</th>
+                <th>Check Out</th>
+                <th>Working Hours</th>
+              </tr>
+            </thead>
+            <tbody id="attendanceTbody">
+              <tr><td colspan="6" style="text-align:center; padding:12px;">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
       </section>
     </main>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     (function(){
       const dateText = document.getElementById('dateText');
@@ -88,8 +113,137 @@
         const f = e.target.files && e.target.files[0];
         if (f) applyPreview(f);
       });
+
+      // Reports logic
+      const API_BASE = 'http://localhost/Attendance-System-Website/api';
+      const attendanceTbody = document.getElementById('attendanceTbody');
+      const attendanceWrap = document.getElementById('attendanceWrap');
+      const searchInput = document.getElementById('searchInput');
+
+      function toYmd(d){ const y = d.getFullYear(); const m = String(d.getMonth()+1).padStart(2,'0'); const da = String(d.getDate()).padStart(2,'0'); return `${y}-${m}-${da}`; }
+      const today = new Date();
+      const startValue = toYmd(today);
+      const endValue = toYmd(today);
+
+      let page = 1;
+      const perPage = 50;
+      let loading = false;
+      let hasMore = true;
+      let q = '';
+      let rowCount = 0; // serial number counter across pages
+
+      async function fetchAttendanceRange(p){
+        const params = new URLSearchParams({ page:String(p), per_page:String(perPage), start_date: startValue, end_date: endValue, only_checkin:'1' });
+        if (q) params.set('q', q);
+        const res = await fetch(`${API_BASE}/attendance.php?${params.toString()}`);
+        if (!res.ok) throw new Error('Failed to load attendance');
+        return res.json();
+      }
+
+      function renderAttendance(items, append=false){
+        if (!Array.isArray(items) || items.length === 0){
+          if (!append) attendanceTbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:12px;">No records</td></tr>';
+          return;
+        }
+        function formatTime(ts){
+          if (!ts) return '';
+          const d = new Date(ts.replace(' ', 'T'));
+          if (isNaN(d)) return ts;
+          const hh = String(d.getHours()).padStart(2,'0');
+          const mm = String(d.getMinutes()).padStart(2,'0');
+          return `${hh}:${mm}`;
+        }
+        let i = 0;
+        const rows = items.map(r => {
+          const no = rowCount + (++i);
+          return `
+          <tr>
+            <td>${no}</td>
+            <td>${r.user_id ?? ''}</td>
+            <td>${r.user_name ?? ''}</td>
+            <td>${r.user_email ?? ''}</td>
+            <td>${formatTime(r.check_in)}</td>
+            <td>${formatTime(r.check_out)}</td>
+            <td>${r.working_hours ?? ''}</td>
+          </tr>
+          `;
+        }).join('');
+        if (append) {
+          const temp = document.createElement('tbody');
+          temp.innerHTML = rows;
+          while (temp.firstChild) attendanceTbody.appendChild(temp.firstChild);
+          rowCount += i;
+        } else {
+          attendanceTbody.innerHTML = rows;
+          rowCount += i;
+        }
+      }
+
+      let chart;
+      async function loadChart(){
+        const params = new URLSearchParams({ start_date: startValue, end_date: endValue });
+        const res = await fetch(`${API_BASE}/attendance_stats.php?${params.toString()}`);
+        const data = await res.json();
+        const labels = data.data.points.map(p => p.hour);
+        const values = data.data.points.map(p => p.logins);
+        const ctx = document.getElementById('loginChart').getContext('2d');
+        if (chart) chart.destroy();
+        chart = new Chart(ctx, {
+          type: 'line',
+          data: { labels, datasets: [{ label: 'Logins', data: values, fill:false, borderColor:'#00ACC1', tension:0.2 }] },
+          options: { responsive: true, plugins:{ legend:{ display:true } }, scales:{ x:{ ticks:{ maxRotation:0 } }, y:{ beginAtZero:true, precision:0 } } }
+        });
+      }
+
+      async function loadAll(){
+        try{
+          page = 1; hasMore = true; rowCount = 0;
+          attendanceTbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:12px;">Loading...</td></tr>';
+          const data = await fetchAttendanceRange(page);
+          if (data && data.success){
+            renderAttendance(data.data.items);
+            const pag = data.data.pagination;
+            hasMore = pag && pag.page < pag.total_pages;
+          }
+          await loadChart();
+        }catch(e){
+          attendanceTbody.innerHTML = `<tr><td colspan=\"5\" style=\"color:#c00; text-align:center; padding:12px;\">${e.message}</td></tr>`;
+        }
+      }
+
+      async function loadMore(){
+        if (loading || !hasMore) return;
+        loading = true;
+        try{
+          page += 1;
+          const data = await fetchAttendanceRange(page);
+          if (data && data.success){
+            renderAttendance(data.data.items, true);
+            const pag = data.data.pagination;
+            hasMore = pag && pag.page < pag.total_pages;
+          }
+        } finally {
+          loading = false;
+        }
+      }
+
+      // Infinite scroll inside the table wrapper
+      attendanceWrap && attendanceWrap.addEventListener('scroll', () => {
+        const nearBottom = attendanceWrap.scrollTop + attendanceWrap.clientHeight >= attendanceWrap.scrollHeight - 50;
+        if (nearBottom) loadMore();
+      });
+
+      // Search debounce
+      let st;
+      searchInput && searchInput.addEventListener('input', () => {
+        clearTimeout(st);
+        st = setTimeout(() => { q = searchInput.value.trim(); loadAll(); }, 300);
+      });
+
+      loadAll();
     })();
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
 </html>
 
