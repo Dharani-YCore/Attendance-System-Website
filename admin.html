@@ -9,8 +9,12 @@
 <body>
   <div class="admin-shell">
     <aside class="admin-sidebar">
-      <div class="admin-profile">
-        <div class="admin-avatar"></div>
+      <div class="admin-profile" style="position:relative;">
+        <div class="avatar-wrap" style="position:relative; display:inline-block;">
+          <div class="admin-avatar" id="sidebarAvatar">A</div>
+          <button id="avatarAddBtn" title="Add photo" style="position:absolute; right:-4px; bottom:-4px; width:24px; height:24px; border-radius:50%; border:none; background:#0ea5e9; color:#fff; cursor:pointer; line-height:24px; text-align:center;">+</button>
+          <input type="file" id="avatarFile" accept="image/*" style="display:none;" />
+        </div>
         <div class="admin-name">Admin</div>
       </div>
       <nav class="admin-nav">
@@ -138,5 +142,30 @@
   </div>
 
   <script src="dashboard.js"></script>
+  <script>
+    (function(){
+      const nameEl = document.querySelector('.admin-name');
+      const avatar = document.getElementById('sidebarAvatar');
+      const btn = document.getElementById('avatarAddBtn');
+      const file = document.getElementById('avatarFile');
+      // Set first letter by default
+      if (nameEl && avatar && !avatar.style.backgroundImage){
+        const letter = (nameEl.textContent || 'A').trim().charAt(0).toUpperCase();
+        avatar.textContent = letter || 'A';
+      }
+      function applyPreview(fileObj){
+        const url = URL.createObjectURL(fileObj);
+        avatar.style.backgroundImage = `url('${url}')`;
+        avatar.style.backgroundSize = 'cover';
+        avatar.style.backgroundPosition = 'center';
+        avatar.textContent = '';
+      }
+      btn && btn.addEventListener('click', () => file && file.click());
+      file && file.addEventListener('change', (e) => {
+        const f = e.target.files && e.target.files[0];
+        if (f) applyPreview(f);
+      });
+    })();
+  </script>
 </body>
 </html>
