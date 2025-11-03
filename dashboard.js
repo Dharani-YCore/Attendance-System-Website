@@ -1,6 +1,31 @@
 (function(){
   const $ = (sel) => document.querySelector(sel);
 
+  // Sidebar avatar behavior
+  const nameEl = document.querySelector('.admin-name');
+  const avatar = document.getElementById('sidebarAvatar');
+  const btn = document.getElementById('avatarAddBtn');
+  const file = document.getElementById('avatarFile');
+  
+  if (nameEl && avatar && !avatar.style.backgroundImage){
+    const letter = (nameEl.textContent || 'A').trim().charAt(0).toUpperCase();
+    avatar.textContent = letter || 'A';
+  }
+  
+  function applyPreview(fileObj){
+    const url = URL.createObjectURL(fileObj);
+    avatar.style.backgroundImage = `url('${url}')`;
+    avatar.style.backgroundSize = 'cover';
+    avatar.style.backgroundPosition = 'center';
+    avatar.textContent = '';
+  }
+  
+  btn && btn.addEventListener('click', () => file && file.click());
+  file && file.addEventListener('change', (e) => {
+    const f = e.target.files && e.target.files[0];
+    if (f) applyPreview(f);
+  });
+
   const API = {
     base: 'http://localhost/Attendance-System-Website/api',
     get users(){ return `${this.base}/users.php`; },

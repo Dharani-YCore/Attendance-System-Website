@@ -50,7 +50,8 @@ if ($where) {
 // Fetch page
 if ($where) {
     $stmt = $mysqli->prepare(
-        "SELECT a.id, u.id AS user_id, u.name AS user_name, u.email AS user_email, a.date, a.check_in_time, a.check_out_time, a.total_hours
+        "SELECT a.id, u.id AS user_id, u.name AS user_name, u.email AS user_email, a.date, a.check_in_time, a.check_out_time, a.total_hours,
+         a.check_in_latitude, a.check_in_longitude, a.check_out_latitude, a.check_out_longitude, a.location_accuracy
          FROM attendance a
          JOIN users u ON a.user_id = u.id
          $where
@@ -61,7 +62,8 @@ if ($where) {
     $stmt->bind_param($typesFetch, ...array_merge($params, [$perPage, $offset]));
 } else {
     $stmt = $mysqli->prepare(
-        'SELECT a.id, u.id AS user_id, u.name AS user_name, u.email AS user_email, a.date, a.check_in_time, a.check_out_time, a.total_hours
+        'SELECT a.id, u.id AS user_id, u.name AS user_name, u.email AS user_email, a.date, a.check_in_time, a.check_out_time, a.total_hours,
+         a.check_in_latitude, a.check_in_longitude, a.check_out_latitude, a.check_out_longitude, a.location_accuracy
          FROM attendance a
          JOIN users u ON a.user_id = u.id
          ORDER BY a.date DESC, a.check_in_time DESC
