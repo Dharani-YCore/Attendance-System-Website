@@ -8,15 +8,29 @@ $offset = ($page - 1) * $perPage;
 
 // Optional search by user name or email
 $q = isset($_GET['q']) ? trim($_GET['q']) : '';
-$where = '';
+$startDate = isset($_GET['start_date']) ? trim($_GET['start_date']) : '';
+$endDate = isset($_GET['end_date']) ? trim($_GET['end_date']) : '';
+$onlyCheckin = isset($_GET['only_checkin']) ? (int)$_GET['only_checkin'] : 0;
+$clauses = [];
 $params = [];
 $types = '';
 if ($q !== '') {
-    $where = 'WHERE u.name LIKE ? OR u.email LIKE ?';
+    $clauses[] = '(u.name LIKE ? OR u.email LIKE ?)';
     $like = '%' . $q . '%';
-    $params = [$like, $like];
-    $types = 'ss';
+    $params[] = $like; $params[] = $like; $types .= 'ss';
 }
+if ($startDate !== '') {
+    $clauses[] = 'a.date >= ?';
+    $params[] = $startDate; $types .= 's';
+}
+if ($endDate !== '') {
+    $clauses[] = 'a.date <= ?';
+    $params[] = $endDate; $types .= 's';
+}
+if ($onlyCheckin === 1) {
+    $clauses[] = '(a.check_in_time IS NOT NULL OR a.attendance_type = "check_in")';
+}
+$where = count($clauses) ? ('WHERE ' . implode(' AND ', $clauses)) : '';
 
 // Total count
 if ($where) {
@@ -36,7 +50,8 @@ if ($where) {
 // Fetch page
 if ($where) {
     $stmt = $mysqli->prepare(
-        "SELECT a.id, u.name AS user_name, a.date, a.check_in_time, a.check_out_time, a.total_hours
+        "SELECT a.id, u.id AS user_id, u.name AS user_name, u.email AS user_email, a.date, a.check_in_time, a.check_out_time, a.total_hours,
+         a.check_in_latitude, a.check_in_longitude, a.check_out_latitude, a.check_out_longitude, a.location_accuracy
          FROM attendance a
          JOIN users u ON a.user_id = u.id
          $where
@@ -47,7 +62,8 @@ if ($where) {
     $stmt->bind_param($typesFetch, ...array_merge($params, [$perPage, $offset]));
 } else {
     $stmt = $mysqli->prepare(
-        'SELECT a.id, u.name AS user_name, a.date, a.check_in_time, a.check_out_time, a.total_hours
+        'SELECT a.id, u.id AS user_id, u.name AS user_name, u.email AS user_email, a.date, a.check_in_time, a.check_out_time, a.total_hours,
+         a.check_in_latitude, a.check_in_longitude, a.check_out_latitude, a.check_out_longitude, a.location_accuracy
          FROM attendance a
          JOIN users u ON a.user_id = u.id
          ORDER BY a.date DESC, a.check_in_time DESC
@@ -83,7 +99,9 @@ while ($row = $result->fetch_assoc()) {
     }
     $items[] = [
         'id' => (int)$row['id'],
+        'user_id' => isset($row['user_id']) ? (int)$row['user_id'] : null,
         'user_name' => $row['user_name'],
+        'user_email' => $row['user_email'] ?? null,
         'check_in' => $date . ( $checkIn ? (' ' . $checkIn) : ''),
         'check_out' => $checkOut ? ($date . ' ' . $checkOut) : null,
         'working_hours' => $working,

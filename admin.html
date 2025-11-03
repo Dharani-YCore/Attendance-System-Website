@@ -9,8 +9,12 @@
 <body>
   <div class="admin-shell">
     <aside class="admin-sidebar">
-      <div class="admin-profile">
-        <div class="admin-avatar"></div>
+      <div class="admin-profile" style="position:relative;">
+        <div class="avatar-wrap" style="position:relative; display:inline-block;">
+          <div class="admin-avatar" id="sidebarAvatar">A</div>
+          <button id="avatarAddBtn" title="Add photo" style="position:absolute; right:-4px; bottom:-4px; width:24px; height:24px; border-radius:50%; border:none; background:#0ea5e9; color:#fff; cursor:pointer; line-height:24px; text-align:center;">+</button>
+          <input type="file" id="avatarFile" accept="image/*" style="display:none;" />
+        </div>
         <div class="admin-name">Admin</div>
       </div>
       <nav class="admin-nav">
