@@ -105,6 +105,11 @@ while ($row = $result->fetch_assoc()) {
         'check_in' => $date . ( $checkIn ? (' ' . $checkIn) : ''),
         'check_out' => $checkOut ? ($date . ' ' . $checkOut) : null,
         'working_hours' => $working,
+        'check_in_latitude' => isset($row['check_in_latitude']) ? (float)$row['check_in_latitude'] : null,
+        'check_in_longitude' => isset($row['check_in_longitude']) ? (float)$row['check_in_longitude'] : null,
+        'check_out_latitude' => isset($row['check_out_latitude']) ? (float)$row['check_out_latitude'] : null,
+        'check_out_longitude' => isset($row['check_out_longitude']) ? (float)$row['check_out_longitude'] : null,
+        'location_accuracy' => isset($row['location_accuracy']) ? (float)$row['location_accuracy'] : null,
     ];
 }
 $stmt->close();
