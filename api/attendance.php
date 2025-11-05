@@ -51,7 +51,7 @@ if ($where) {
 if ($where) {
     $stmt = $mysqli->prepare(
         "SELECT a.id, u.id AS user_id, u.name AS user_name, u.email AS user_email, a.date, a.check_in_time, a.check_out_time, a.total_hours,
-         a.check_in_latitude, a.check_in_longitude, a.check_out_latitude, a.check_out_longitude, a.location_accuracy
+         a.check_in_latitude, a.check_in_longitude, a.check_in_address, a.check_out_latitude, a.check_out_longitude, a.check_out_address, a.location_accuracy
          FROM attendance a
          JOIN users u ON a.user_id = u.id
          $where
@@ -63,7 +63,7 @@ if ($where) {
 } else {
     $stmt = $mysqli->prepare(
         'SELECT a.id, u.id AS user_id, u.name AS user_name, u.email AS user_email, a.date, a.check_in_time, a.check_out_time, a.total_hours,
-         a.check_in_latitude, a.check_in_longitude, a.check_out_latitude, a.check_out_longitude, a.location_accuracy
+         a.check_in_latitude, a.check_in_longitude, a.check_in_address, a.check_out_latitude, a.check_out_longitude, a.check_out_address, a.location_accuracy
          FROM attendance a
          JOIN users u ON a.user_id = u.id
          ORDER BY a.date DESC, a.check_in_time DESC
@@ -107,8 +107,10 @@ while ($row = $result->fetch_assoc()) {
         'working_hours' => $working,
         'check_in_latitude' => isset($row['check_in_latitude']) ? (float)$row['check_in_latitude'] : null,
         'check_in_longitude' => isset($row['check_in_longitude']) ? (float)$row['check_in_longitude'] : null,
+        'check_in_address' => $row['check_in_address'] ?? null,
         'check_out_latitude' => isset($row['check_out_latitude']) ? (float)$row['check_out_latitude'] : null,
         'check_out_longitude' => isset($row['check_out_longitude']) ? (float)$row['check_out_longitude'] : null,
+        'check_out_address' => $row['check_out_address'] ?? null,
         'location_accuracy' => isset($row['location_accuracy']) ? (float)$row['location_accuracy'] : null,
     ];
 }

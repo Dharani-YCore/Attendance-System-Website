@@ -1,4 +1,38 @@
 <?php
+// Custom error handler to return JSON instead of HTML
+set_error_handler(function($errno, $errstr, $errfile, $errline) {
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'message' => 'PHP Error: ' . $errstr,
+        'error_details' => [
+            'file' => basename($errfile),
+            'line' => $errline,
+            'type' => $errno
+        ]
+    ]);
+    exit();
+});
+
+// Custom exception handler
+set_exception_handler(function($exception) {
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Exception: ' . $exception->getMessage(),
+        'error_details' => [
+            'file' => basename($exception->getFile()),
+            'line' => $exception->getLine()
+        ]
+    ]);
+    exit();
+});
+
+// Suppress HTML error display but log to file
+ini_set('display_errors', '0');
+ini_set('log_errors', '1');
+error_reporting(E_ALL);
+
 // DB config for XAMPP (adjust if needed)
 $DB_HOST = 'localhost';
 $DB_USER = 'root';
@@ -21,7 +55,8 @@ if ($mysqli->connect_errno) {
     http_response_code(500);
     echo json_encode([
         'success' => false,
-        'message' => 'Database connection failed: ' . $mysqli->connect_error
+        'message' => 'Database connection failed: ' . $mysqli->connect_error,
+        'hint' => 'Please ensure MySQL is running in XAMPP and the attendance_system database exists. Import database.sql via phpMyAdmin.'
     ]);
     exit();
 }

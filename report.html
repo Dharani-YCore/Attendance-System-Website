@@ -63,8 +63,8 @@
                 <th>User Name</th>
                 <th>Email</th>
                 <th>Check In</th>
-                <th>Check In Location</th>
                 <th>Check Out</th>
+                <th>Location</th>
                 <th>Working Hours</th>
               </tr>
             </thead>
@@ -154,10 +154,11 @@
           const mm = String(d.getMinutes()).padStart(2,'0');
           return `${hh}:${mm}`;
         }
-        function formatLocation(lat, lon){
+        function formatLocation(lat, lon, address){
           if (lat == null || lon == null) return '<span style="color:#999;">N/A</span>';
           const url = `https://www.google.com/maps?q=${lat},${lon}`;
-          return `<a href="${url}" target="_blank" style="color:#0ea5e9; text-decoration:none;" title="View on Google Maps">📍 View</a>`;
+          const displayText = address || `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
+          return `<a href="${url}" target="_blank" style="color:#0ea5e9; text-decoration:none; display:block; max-width:250px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${address || 'Click to view on Google Maps'}">📍 ${displayText}</a>`;
         }
         let i = 0;
         const rows = items.map(r => {
@@ -169,8 +170,8 @@
             <td>${r.user_name ?? ''}</td>
             <td>${r.user_email ?? ''}</td>
             <td>${formatTime(r.check_in)}</td>
-            <td>${formatLocation(r.check_in_latitude, r.check_in_longitude)}</td>
             <td>${formatTime(r.check_out)}</td>
+            <td>${formatLocation(r.check_in_latitude, r.check_in_longitude, r.check_in_address)}</td>
             <td>${r.working_hours ?? ''}</td>
           </tr>
           `;
